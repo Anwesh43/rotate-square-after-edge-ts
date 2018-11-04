@@ -162,3 +162,26 @@ class RotateSquareAfterEdge {
         this.curr.startUpdating(cb)
     }
 }
+
+class Renderer {
+    rsae : RotateSquareAfterEdge = new RotateSquareAfterEdge()
+    animator : Animator = new Animator()
+
+    render(context : CanvasRenderingContext2D) {
+        context.fillStyle = '#BDBDBD'
+        context.fillRect(0, 0, w, h)
+        this.rsae.draw(context)
+    }
+
+    handleTap(cb : Function) {
+        this.rsae.startUpdating(() => {
+            this.animator.start(() => {
+                cb()
+                this.rsae.update(() => {
+                    this.animator.stop()
+                    cb()
+                })
+            })
+        })
+    }
+}
