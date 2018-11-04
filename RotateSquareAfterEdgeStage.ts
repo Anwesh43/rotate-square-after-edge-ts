@@ -1,5 +1,6 @@
 const w : number = window.innerWidth, h : number = window.innerHeight
 const nodes : number = 5
+const edges : number = 3
 class RotateSquareAfterEdgeStage {
 
     canvas : HTMLCanvasElement = document.createElement('canvas')
@@ -29,5 +30,30 @@ class RotateSquareAfterEdgeStage {
         stage.initCanvas()
         stage.render()
         stage.handleTap()
+    }
+}
+
+class State {
+    scale : number = 0
+    dir : number = 0
+    prevScale : number = 0
+
+    update(cb : Function) {
+        const scGap : number = 0.05
+        const k : number = Math.floor(this.scale / 0.5)
+        this.scale += (this.dir * scGap) * (k *  + (1 - k)/edges)
+        if (Math.abs(this.scale - this.prevScale) > 1) {
+            this.scale = this.prevScale + this.dir
+            this.dir = 0
+            this.prevScale = this.scale
+            cb()
+        }
+    }
+
+    startUpdating(cb : Function) {
+        if (this.dir == 0) {
+            this.dir = 1 - 2 * this.prevScale
+            cb()
+        }
     }
 }
