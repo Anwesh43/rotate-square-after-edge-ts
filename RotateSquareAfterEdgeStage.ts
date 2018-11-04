@@ -1,6 +1,7 @@
 const w : number = window.innerWidth, h : number = window.innerHeight
 const nodes : number = 5
 const edges : number = 3
+console.log(document.location)
 class RotateSquareAfterEdgeStage {
 
     canvas : HTMLCanvasElement = document.createElement('canvas')
@@ -17,8 +18,6 @@ class RotateSquareAfterEdgeStage {
     }
 
     render() {
-        this.context.fillStyle = '#BDBDBD'
-        this.context.fillRect(0, 0, w, h)
         this.renderer.render(this.context)
     }
 
@@ -46,7 +45,8 @@ class State {
     update(cb : Function) {
         const scGap : number = 0.05
         const k : number = Math.floor(this.scale / 0.5)
-        this.scale += (this.dir * scGap) * (k *  + (1 - k)/edges)
+        this.scale += (this.dir * scGap) * (k + (1 - k)/edges)
+        console.log((this.dir * scGap) * (k *  + (1 - k)/edges))
         if (Math.abs(this.scale - this.prevScale) > 1) {
             this.scale = this.prevScale + this.dir
             this.dir = 0
@@ -58,6 +58,7 @@ class State {
     startUpdating(cb : Function) {
         if (this.dir == 0) {
             this.dir = 1 - 2 * this.prevScale
+            console.log(this.dir)
             cb()
         }
     }
@@ -108,21 +109,27 @@ class RSAENode {
         const a : number = gap / 3
         const deg : number = 2 * Math.PI / edges
         context.save()
-        context.translate(this.i * (gap + 1), h/2)
+        context.translate(gap * (this.i + 1), h/2)
         const sc1 : number = divideScale(this.state.scale, 0, 2)
         const sc2 : number = divideScale(this.state.scale, 1, 2)
-        context.rotate(Math.PI * sc2)
+        context.rotate(Math.PI/2 * sc2)
         for (var i = 0; i < edges; i++) {
             const sc : number = divideScale(sc1, i, edges)
             context.save()
             context.rotate(deg * i)
             context.translate(0, a / Math.tan(deg/2))
-            context.moveTo(-a * sc, 0)
-            context.lineTo(a * sc, 0)
-            context.stroke()
+            if (sc > 0) {
+                context.beginPath()
+                context.moveTo(a, 0)
+                context.lineTo(a - 2 * a * sc, 0)
+                context.stroke()
+            }
             context.restore()
         }
         context.restore()
+        if (this.prev) {
+            this.prev.draw(context)
+        }
     }
 
     update(cb : Function) {
